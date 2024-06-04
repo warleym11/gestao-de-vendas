@@ -10,7 +10,7 @@ public class Conexao {
     // Configurações de conexão com o banco de dados
     private static final String URL = "jdbc:postgresql://localhost:5432/gestaoDeProdutos";
     private static final String USUARIO = "postgres";
-    private static final String SENHA = "12345678";
+    private static final String SENHA = "aluno";
 
     // Método para estabelecer a conexão com o banco de dados
     public static Connection conectar() throws SQLException {

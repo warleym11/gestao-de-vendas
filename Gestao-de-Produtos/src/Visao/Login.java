@@ -3,8 +3,11 @@ package Visao;
 import Controle.Conexao;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -19,10 +22,13 @@ public class Login extends JFrame {
 
     public Login() {
         setContentPane(TelaLogin);
-        setSize(850, 700 );
+        setSize(850, 700);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
+
+        // Configurar placeholders
+        configurePlaceholders();
 
         // Criar um JPopupMenu
         JPopupMenu popupMenu = new JPopupMenu();
@@ -65,7 +71,9 @@ public class Login extends JFrame {
                 String email = textField2.getText();
                 String senha = new String(passwordField1.getPassword());
 
-                if ("admin".equals(email) && "admin".equals(senha)) {
+                if ("Digite seu email".equals(email) || "Digite sua senha".equals(senha)) {
+                    JOptionPane.showMessageDialog(null, "Por favor, preencha todos os campos.");
+                } else if ("admin".equals(email) && "admin".equals(senha)) {
                     JOptionPane.showMessageDialog(null, "Bem-vindo, administrador!");
                     new adminHome(); // Abre a tela de administrador
                     dispose(); // Fecha a tela de login
@@ -86,5 +94,56 @@ public class Login extends JFrame {
                 dispose();
             }
         });
+    }
+
+    private void configurePlaceholders() {
+        Color placeholderColor = new Color(128, 128, 128); // Usar um tom de cinza mais claro
+
+        textField2.setForeground(placeholderColor);
+        textField2.setText("Digite seu email");
+        textField2.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (textField2.getText().equals("Digite seu email")) {
+                    textField2.setText("");
+                    textField2.setForeground(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (textField2.getText().isEmpty()) {
+                    textField2.setForeground(placeholderColor);
+                    textField2.setText("Digite seu email");
+                }
+            }
+        });
+
+        passwordField1.setForeground(placeholderColor);
+        passwordField1.setEchoChar((char) 0);
+        passwordField1.setText("Digite sua senha");
+        passwordField1.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (String.valueOf(passwordField1.getPassword()).equals("Digite sua senha")) {
+                    passwordField1.setText("");
+                    passwordField1.setEchoChar('*');
+                    passwordField1.setForeground(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (String.valueOf(passwordField1.getPassword()).isEmpty()) {
+                    passwordField1.setForeground(placeholderColor);
+                    passwordField1.setText("Digite sua senha");
+                    passwordField1.setEchoChar((char) 0);
+                }
+            }
+        });
+    }
+
+    public static void main(String[] args) {
+        new Login();
     }
 }
