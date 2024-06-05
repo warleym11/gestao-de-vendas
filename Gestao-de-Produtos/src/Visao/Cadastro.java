@@ -3,11 +3,11 @@ package Visao;
 import Controle.Conexao;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -31,12 +31,8 @@ public class Cadastro extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
 
-        // Adicionando placeholders visíveis
-        addPlaceholder(NomeInput, "Digite seu nome");
-        addPlaceholder(EmailInput, "Digite seu email");
-        addPlaceholder(CPFInput, "Digite seu CPF");
-        addPasswordPlaceholder(SenhaInput, "Digite sua senha");
-        addPasswordPlaceholder(ConfirmarSenha, "Confirme sua senha");
+        // Configurar placeholders
+        configurePlaceholders();
 
         // Criar um JPopupMenu
         JPopupMenu popupMenu = new JPopupMenu();
@@ -110,59 +106,6 @@ public class Cadastro extends JFrame {
         });
     }
 
-    // Método para adicionar placeholder em JTextField
-    private void addPlaceholder(JTextField textField, String placeholder) {
-        textField.setUI(new JTextFieldHintUI(placeholder, Color.GRAY));
-    }
-
-    // Método para adicionar placeholder em JPasswordField
-    private void addPasswordPlaceholder(JPasswordField passwordField, String placeholder) {
-        passwordField.setEchoChar((char) 0);
-        passwordField.setText(placeholder);
-        passwordField.setForeground(Color.GRAY);
-
-        passwordField.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                if (String.valueOf(passwordField.getPassword()).equals(placeholder)) {
-                    passwordField.setText("");
-                    passwordField.setEchoChar('*');
-                    passwordField.setForeground(Color.BLACK);
-                }
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                if (passwordField.getPassword().length == 0) {
-                    passwordField.setText(placeholder);
-                    passwordField.setEchoChar((char) 0);
-                    passwordField.setForeground(Color.GRAY);
-                }
-            }
-        });
-
-        passwordField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                if (String.valueOf(passwordField.getPassword()).equals(placeholder)) {
-                    passwordField.setForeground(Color.GRAY);
-                    passwordField.setEchoChar((char) 0);
-                } else {
-                    passwordField.setForeground(Color.BLACK);
-                    passwordField.setEchoChar('*');
-                }
-            }
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                if (String.valueOf(passwordField.getPassword()).isEmpty()) {
-                    passwordField.setForeground(Color.GRAY);
-                    passwordField.setEchoChar((char) 0);
-                }
-            }
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                // Not needed for plain-text fields
-            }
-        });
-    }
-
     // Método para validar se a senha possui número, letra e caractere especial
     private boolean validatePasswordChars(String senha) {
         boolean hasNumber = false;
@@ -226,59 +169,37 @@ public class Cadastro extends JFrame {
         return numbers[10] == expectedDigit2;
     }
 
+    private void configurePlaceholders() {
+        addPlaceholder(NomeInput, "Digite seu nome");
+        addPlaceholder(EmailInput, "Digite seu email");
+        addPlaceholder(CPFInput, "Digite seu CPF");
+        addPlaceholder(SenhaInput, "Digite sua Senha");
+        addPlaceholder(ConfirmarSenha, "Digite sua senha novamente");
+    }
+
+    private void addPlaceholder(JTextField textField, String placeholder) {
+        textField.setForeground(Color.GRAY);
+        textField.setText(placeholder);
+        textField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (textField.getText().equals(placeholder)) {
+                    textField.setText("");
+                    textField.setForeground(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (textField.getText().isEmpty()) {
+                    textField.setForeground(Color.GRAY);
+                    textField.setText(placeholder);
+                }
+            }
+        });
+    }
+
     public static void main(String[] args) {
         new Cadastro();
-    }
-}
-
-// Classe para desenhar o placeholder no JTextField
-class JTextFieldHintUI extends javax.swing.plaf.basic.BasicTextFieldUI implements java.awt.event.FocusListener, java.beans.PropertyChangeListener {
-    private String hint;
-    private java.awt.Color hintColor;
-
-    public JTextFieldHintUI(String hint, java.awt.Color hintColor) {
-        this.hint = hint;
-        this.hintColor = hintColor;
-    }
-
-    @Override
-    protected void paintSafely(java.awt.Graphics g) {
-        super.paintSafely(g);
-        if (getComponent().getText().isEmpty() && !getComponent().hasFocus()) {
-            g.setColor(hintColor);
-            int padding = (getComponent().getHeight() - getComponent().getFont().getSize()) / 2;
-            g.drawString(hint, 2, getComponent().getHeight() - padding - 1);
-        }
-    }
-
-    @Override
-    public void focusGained(java.awt.event.FocusEvent e) {
-        getComponent().repaint();
-    }
-
-    @Override
-    public void focusLost(java.awt.event.FocusEvent e) {
-        getComponent().repaint();
-    }
-
-    @Override
-    public void propertyChange(java.beans.PropertyChangeEvent evt) {
-        if ("text".equals(evt.getPropertyName())) {
-            getComponent().repaint();
-        }
-    }
-
-    @Override
-    protected void installListeners() {
-        super.installListeners();
-        getComponent().addFocusListener(this);
-        getComponent().addPropertyChangeListener("text", this);
-    }
-
-    @Override
-    protected void uninstallListeners() {
-        super.uninstallListeners();
-        getComponent().removeFocusListener(this);
-        getComponent().removePropertyChangeListener("text", this);
     }
 }
